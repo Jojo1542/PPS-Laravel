@@ -1,0 +1,53 @@
+services:
+  mariadb:
+    image: mariadb:latest
+    ports:
+      - 3306:3306
+    networks:
+      - laravel_network
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+    volumes:
+      - ./mariadb/:/var/lib/mysql:Z
+    restart: unless-stopped
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    ports:
+      - 8080:80
+    networks:
+      - laravel_network
+    environment:
+      PMA_HOST: mariadb
+      PMA_USER: root
+      PMA_PASSWORD: 1234
+    restart: unless-stopped
+
+  redis:
+    image: redis:latest
+    networks:
+      - laravel_network
+  
+  laravel:
+    container_name: laravel
+    image: bitnami/laravel:latest
+    ports:
+      - 80:8000
+    networks:
+      - laravel_network
+    environment:
+      - DB_HOST=mariadb
+      - DB_PORT=3306
+      - DB_USERNAME=root
+      - DB_DATABASE=laravel
+      - DB_PASSWORD=1234
+      - LARAVEL_DATABASE_TYPE=mysql
+      - LARAVEL_DATABASE_HOST=mariadb
+      - LARAVEL_DATABASE_NAME=laravel
+      - LARAVEL_DATABASE_USER=root
+      - LARAVEL_DATABASE_PASSWORD=1234
+    volumes:
+      - ./app:/app
+
+networks:
+  laravel_network:

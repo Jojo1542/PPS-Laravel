@@ -1,0 +1,3 @@
+mariadb/
+.env
+.env.encrypted
